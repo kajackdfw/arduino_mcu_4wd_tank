@@ -158,6 +158,23 @@ EOF
 {"left":200, "right":150, "duration":2}
 ```
 
+**special curve macro**
+``` these are curve command preset values, based on manual calibration they are mapped to The command buttons marked with rewind or fast forward icons that are curve around 22.5, 45, and 90. these will use some preset values for left and right motor speeds. The presets values will be based on some calculations based on a dictionary of rover gemometry settings. In code we will call them 
+1. curve_FL_90 ( forward and left curve to 90 degree ccw )
+1. curve_FL_45 ( forward and left curve to 45 degree ccw )
+1. curve_FL_22_5 ( forward and left curve to 22.5 degree ccw )
+1. curve_FR_90 ( forward and right curve 90 degree cw )
+1. curve_FR_45 ( forward and right curve to 45 degree cw )
+1. curve_FR_22_5 ( forward and right curve to 22.5 degree cw )
+1. curve_RL_90 ( reverse and left curve to 90 degree cw )
+1. curve_RL_45 ( reverse and left curve to 45 degree cw )
+1. curve_RL_22_5 ( reverse and left curve to 22.5 degree cw )
+1. curve_RR_90 ( reverse and right curve 90 degree ccw )
+1. curve_RR_45 ( reverse and right curve to 45 degree ccw )
+1. curve_RR_22_5 ( reverse and right curve to 22.5 degree ccw )
+These will all use a speed setting called autonimous_speed, instead of default_speed. Using a dictionary for each, a drive command of {"cmd":"curve", "left_speed":200, "right_speed":150, "distance": 420} . The odometer sensor on the outer wheel will be used for determining distance traveled. The inner wheel odometer will be recorded and compared at the end of the maneuver to a stored value to determine accuracy of the curve manuever and reported to the driver. Different terrains may evoke wheel slippage and may be a subject to analyze and adjust for in the future. 
+
+
 **Control Commands:**
 ```json
 {"cmd":"stop"}             // Stop motors, cancel timed movement
