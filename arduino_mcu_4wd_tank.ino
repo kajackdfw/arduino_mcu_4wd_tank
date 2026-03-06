@@ -51,6 +51,13 @@ bool timedMovement = false;
 unsigned long movementStartTime = 0;
 unsigned long movementDuration = 0;
 
+// Click-based movement control
+bool clickBasedMovement = false;
+unsigned long leftClickTarget = 0;
+unsigned long rightClickTarget = 0;
+unsigned long leftClickStart = 0;
+unsigned long rightClickStart = 0;
+
 // JSON buffer
 StaticJsonDocument<256> doc;
 
@@ -114,6 +121,19 @@ void loop() {
     }
   }
 
+  // Handle click-based movement
+  if (clickBasedMovement) {
+    noInterrupts();
+    unsigned long l = leftPulseCount;
+    unsigned long r = rightPulseCount;
+    interrupts();
+    if ((l - leftClickStart) >= leftClickTarget || (r - rightClickStart) >= rightClickTarget) {
+      clickBasedMovement = false;
+      stopAllMotors();
+      Serial.println("Click target reached");
+    }
+  }
+
   if (Serial.available() > 0) {
     String input = Serial.readStringUntil('\n');
     input.trim();
@@ -148,8 +168,12 @@ void loop() {
       int rightSpeed = doc["right"];
       setTrackSpeeds(leftSpeed, rightSpeed);
 
-      if (duration > 0) {
+      if (doc.containsKey("clicks")) {
+        startClickBasedMovement((unsigned long)doc["clicks"], (unsigned long)doc["clicks"]);
+      } else if (duration > 0) {
         startTimedMovement(duration);
+      } else {
+        startTimedMovement(3000);
       }
 
       Serial.println("OK");
@@ -173,9 +197,23 @@ void loop() {
         int leftSpeed = doc.containsKey("left_speed") ? doc["left_speed"] : 150;
         int rightSpeed = doc.containsKey("right_speed") ? doc["right_speed"] : 150;
         setTrackSpeeds(leftSpeed, rightSpeed);
+        if (doc.containsKey("left_click") || doc.containsKey("right_click")) {
+          unsigned long lc = doc.containsKey("left_click")  ? (unsigned long)doc["left_click"]  : 0xFFFFFFFFUL;
+          unsigned long rc = doc.containsKey("right_click") ? (unsigned long)doc["right_click"] : 0xFFFFFFFFUL;
+          startClickBasedMovement(lc, rc);
+        } else if (duration > 0) {
+          startTimedMovement(duration);
+        } else {
+          startTimedMovement(3000);
+        }
+        Serial.println("OK");
+        return;
       } else if (cmd == "stop") {
         stopAllMotors();
         timedMovement = false;
+        clickBasedMovement = false;
+        Serial.println("OK");
+        return;
       } else if (cmd == "odometry") {
         noInterrupts();
         unsigned long l = leftPulseCount;
@@ -202,8 +240,12 @@ void loop() {
         return;
       }
 
-      if (duration > 0) {
+      if (doc.containsKey("clicks")) {
+        startClickBasedMovement((unsigned long)doc["clicks"], (unsigned long)doc["clicks"]);
+      } else if (duration > 0) {
         startTimedMovement(duration);
+      } else {
+        startTimedMovement(3000);
       }
 
       Serial.println("OK");
@@ -324,9 +366,21 @@ void forceStopMotors() {
 }
 
 void startTimedMovement(unsigned long duration) {
+  clickBasedMovement = false;
   timedMovement = true;
   movementStartTime = millis();
   movementDuration = duration;
+}
+
+void startClickBasedMovement(unsigned long leftTarget, unsigned long rightTarget) {
+  noInterrupts();
+  leftClickStart = leftPulseCount;
+  rightClickStart = rightPulseCount;
+  interrupts();
+  leftClickTarget = leftTarget;
+  rightClickTarget = rightTarget;
+  timedMovement = false;
+  clickBasedMovement = true;
 }
 
 // ===== WHEEL ODOMETRY ISRs =====
