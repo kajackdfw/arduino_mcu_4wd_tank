@@ -25,33 +25,34 @@ This project implements a 4-wheel drive tank-style rover controlled by an Arduin
 ## Pin Configuration
 
 ### Arduino Pins
+Reference : https://learn.sparkfun.com/tutorials/pro-micro--fio-v3-hookup-guide/all
 
 #### Left Track L298N
-| Pin | Function | Description |
-|-----|----------|-------------|
-| 5 | LEFT_ENA | Left front motor speed (PWM) |
-| 4 | LEFT_IN1 | Left front motor direction |
-| 7 | LEFT_IN2 | Left front motor direction |
-| 6 | LEFT_ENB | Left rear motor speed (PWM) |
-| 8 | LEFT_IN3 | Left rear motor direction |
-| 14 | LEFT_IN4 | Left rear motor direction |
+| Pin | Function | Description                  |
+|-----|----------|------------------------------|
+| 5   | LEFT_ENA | Left front motor speed (PWM) |
+| 4   | LEFT_IN1 | Left front motor direction   |
+| 7   | LEFT_IN2 | Left front motor direction   |
+| 6   | LEFT_ENB | Left rear motor speed (PWM)  |
+| 8   | LEFT_IN3 | Left rear motor direction    |
+| 14  | LEFT_IN4 | Left rear motor direction    |
 
 #### Right Track L298N
-| Pin | Function | Description |
-|-----|----------|-------------|
-| 9 | RIGHT_ENA | Right front motor speed (PWM) |
-| 15 | RIGHT_IN1 | Right front motor direction |
-| 16 | RIGHT_IN2 | Right front motor direction |
-| 10 | RIGHT_ENB | Right rear motor speed (PWM) |
-| 18 | RIGHT_IN3 | Right rear motor direction |
-| 19 | RIGHT_IN4 | Right rear motor direction |
+| Pin | Function  | Description                   |
+|-----|-----------|-------------------------------|
+| 9   | RIGHT_ENA | Right front motor speed (PWM) |
+| 15  | RIGHT_IN1 | Right front motor direction   |
+| 16  | RIGHT_IN2 | Right front motor direction   |
+| 10  | RIGHT_ENB | Right rear motor speed (PWM)  |
+| 18  | RIGHT_IN3 | Right rear motor direction    |
+| 19  | RIGHT_IN4 | Right rear motor direction    |
 
 #### Safety Switches
-| Pin | Function | Type |
-|-----|----------|------|
-| 20 | LEFT_BUMPER | Normally open (INPUT_PULLUP) |
-| 21 | RIGHT_BUMPER | Normally open (INPUT_PULLUP) |
-| 0 | ESTOP_SWITCH | Normally closed (INPUT_PULLUP) |
+| Pin | Function     | Type                           |
+|-----|--------------|--------------------------------|
+| 20  | LEFT_BUMPER  | Normally open (INPUT_PULLUP)   |
+| 21  | RIGHT_BUMPER | Normally open (INPUT_PULLUP)   |
+| 0   | ESTOP_SWITCH | Normally closed (INPUT_PULLUP) | <-- marked RX1 
 
 ## Wiring Notes
 - All safety switches connect between their pin and GND
