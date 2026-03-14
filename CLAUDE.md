@@ -19,7 +19,9 @@ Arduino-based motor controller for a 4WD tank rover with collision detection, em
 - 1x Emergency stop switch (normally closed) - immediate motor cutoff
 
 **Wheel Odometry:**
-- 2x FET sensors (one per track) triggered by magnets on wheels
+- 2x Hall effect sensors (one per track) triggered by magnets on wheels
+  - Recommended: **A3144 / OH3144** — unipolar Hall effect switch, 4.5–24V, TO-92, active LOW, ~$0.30
+  - Alternative: **TI DRV5023** — more precise, 3.3V/5V compatible, SOT-23 package
 - Pulse counting via hardware interrupts (INT0 / INT1) - no pulses missed regardless of loop timing
 - Used for drive speed calibration
 
@@ -31,12 +33,12 @@ Arduino-based motor controller for a 4WD tank rover with collision detection, em
 
 **Wheel Sensor Wiring:**
 ```
-FET Sensor VCC → 5V (or 3.3V per sensor spec)
-FET Sensor GND → GND
-FET Sensor OUT → Pro Micro Pin 2 (left) / Pin 3 (right)
+Hall Effect Sensor VCC → 5V (A3144) or 3.3V (DRV5023)
+Hall Effect Sensor GND → GND
+Hall Effect Sensor OUT → Pro Micro Pin 2 (left) / Pin 3 (right)
 
-Note: Pins use INPUT_PULLUP. Interrupts trigger on RISING edge.
-      Change to FALLING in attachInterrupt() calls if sensor pulls LOW on trigger.
+Note: Pins use INPUT_PULLUP. A3144 output is active LOW (open-collector),
+      so use FALLING edge in attachInterrupt() calls.
       One magnet per wheel gives one pulse per revolution.
       Multiple magnets increase resolution (pulses per revolution).
 ```
