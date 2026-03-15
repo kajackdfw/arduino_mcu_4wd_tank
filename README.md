@@ -112,12 +112,14 @@ Reference : https://learn.sparkfun.com/tutorials/pro-micro--fio-v3-hookup-guide/
 ```json
 {"cmd":"curve", "left_speed":200, "right_speed":150}
 {"cmd":"curve", "left_speed":200, "right_speed":150, "duration":3}
+{"cmd":"curve", "left_speed":200, "right_speed":150, "right_clicks":42, "left_clicks":35}
 ```
 - Independent speed control for each track
 - Creates smooth curved paths
 - Speed range: -255 to 255 (negative = reverse)
 - Default speeds: 150 if not specified
-- Optional duration in seconds
+- Optional `duration` in seconds
+- Optional `right_clicks` / `left_clicks`: odometer pulse targets for each track (used by predefined curve directives calculated by Django from rover geometry measurements)
 
 #### Direct Track Control
 ```json
@@ -144,8 +146,31 @@ Reference : https://learn.sparkfun.com/tutorials/pro-micro--fio-v3-hookup-guide/
 {"cmd":"reset"}
 ```
 - Clears collision detection flags
-- Resets emergency stop flag
+- Does NOT clear e-stop flag (clears automatically on pin release)
 - Required after collision to resume normal operation
+
+#### Identify
+```json
+{"cmd":"identify"}
+```
+- Returns `{"cr_usb_device":"arduino_mcu_4wd_tank"}`
+- Also broadcast automatically on startup (after "Tank Rover Ready")
+- Used by `rpi_rover_services` to identify the connected device
+
+## Unsolicited Serial Events
+
+The Arduino broadcasts events without being asked. The RPi reads these asynchronously in a background thread to maintain live safety state.
+
+| Event | Format | Meaning |
+|---|---|---|
+| Startup | `{"cr_usb_device":"arduino_mcu_4wd_tank"}` | Device identification on boot |
+| Left collision | `{"left_collision": 1}` or `{"left_collision": -1}` | `+1` = hit while moving forward, `-1` = hit while reversing |
+| Right collision | `{"right_collision": 1}` or `{"right_collision": -1}` | Same as above for right side |
+| E-stop active | `EMERGENCY STOP ACTIVATED` | Plain text |
+| E-stop cleared | `Emergency stop cleared` | Plain text |
+| Recovery done | `Recovery complete` | Plain text |
+
+`rpi_rover_services` exposes these via `GET /www/api/robot/state` so the React UI can poll for live safety status.
 
 ## Duration Parameter
 All movement commands support an optional `"duration"` parameter:
@@ -161,23 +186,25 @@ All movement commands support an optional `"duration"` parameter:
 ## Safety Features
 
 ### Emergency Stop
-- **Trigger**: E-stop switch pressed (circuit opens)
+- **Trigger**: E-stop pin 0 reads LOW (`INPUT_PULLUP`; connect to GND to activate, open/connect to PWR to clear)
 - **Action**: Immediately stops all motors
-- **Status**: "EMERGENCY STOP ACTIVATED" printed to serial
-- **Recovery**: Release e-stop switch, send `{"cmd":"reset"}` to clear
+- **Serial output**: `EMERGENCY STOP ACTIVATED`
+- **Recovery**: Flag clears **automatically** when pin returns HIGH (switch released). No `{"cmd":"reset"}` needed for e-stop alone.
+- **Also broadcasts**: `Emergency stop cleared` when released
 
 ### Collision Detection
-- **Trigger**: Bumper switch pressed (normally open closes)
-- **Action**: 
+- **Trigger**: Bumper switch pressed (normally open closes, pin reads LOW)
+- **Action**:
   1. Immediately reverses last movement direction
   2. Backs away for `inverse_action_time` (default 1000ms)
   3. Stops motors
   4. Sets collision flag
-- **Messages**: 
-  - "LEFT COLLISION DETECTED - Reversing"
-  - "RIGHT COLLISION DETECTED - Reversing"
-  - "Recovery complete"
-- **Recovery**: Send `{"cmd":"reset"}` to clear collision flags
+- **Serial output**:
+  - `LEFT COLLISION DETECTED - Reversing`
+  - `RIGHT COLLISION DETECTED - Reversing`
+  - `Recovery complete`
+  - JSON event broadcast: `{"left_collision": 1}` or `{"right_collision": -1}` (value: `+1` = forward hit, `-1` = reverse hit)
+- **Recovery**: Send `{"cmd":"reset"}` to clear collision flags; also broadcasts `{"left_collision": 0, "right_collision": 0}` via the `safety_reset` event
 
 ### Safety Priority
 1. **E-stop** - Highest priority, stops everything
@@ -267,17 +294,15 @@ Response: OK
 Send: {"cmd":"forward","speed":200}
 Response: OK
 
-(E-stop pressed)
+(E-stop pin pulled LOW)
 Output: EMERGENCY STOP ACTIVATED
 
 Send: {"cmd":"forward","speed":200}
 Response: ERROR: Emergency stop active
 
-(E-stop released)
+(E-stop pin released / returned HIGH)
 Output: Emergency stop cleared
-
-Send: {"cmd":"reset"}
-Response: Safety flags reset
+// Flag clears automatically — no reset command needed
 
 Send: {"cmd":"forward","speed":200}
 Response: OK
@@ -432,7 +457,7 @@ Usually COM3, COM4, etc.
 - [ ] Battery voltage monitoring
 - [ ] Current sensing for motor load detection
 - [ ] PID control for precise movements
-- [ ] Odometry/encoder support for accurate distance measurement
+- [x] Odometry/encoder support for accurate distance measurement (implemented via INT0/INT1 hardware interrupts)
 - [ ] Multiple speed profiles (slow/medium/fast presets)
 - [ ] Acceleration/deceleration ramps for smooth starts/stops
 

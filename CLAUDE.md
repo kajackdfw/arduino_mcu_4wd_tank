@@ -157,6 +157,7 @@ EOF
 {"cmd":"left", "speed":180, "duration":1}
 {"cmd":"right", "speed":180}
 {"cmd":"curve", "left_speed":200, "right_speed":150}
+{"cmd":"curve", "left_speed":200, "right_speed":150, "right_clicks":42, "left_clicks":35}
 {"left":200, "right":150, "duration":2}
 ```
 
@@ -180,7 +181,8 @@ These will all use a speed setting called autonimous_speed, instead of default_s
 **Control Commands:**
 ```json
 {"cmd":"stop"}             // Stop motors, cancel timed movement
-{"cmd":"reset"}            // Clear collision/emergency flags
+{"cmd":"reset"}            // Clear collision flags (e-stop clears automatically on pin release)
+{"cmd":"identify"}         // Returns {"cr_usb_device":"arduino_mcu_4wd_tank"} — also broadcast on startup
 {"cmd":"odometry"}         // Query wheel pulse counts
 {"cmd":"reset_odometry"}   // Zero both pulse counters
 ```
@@ -193,12 +195,20 @@ These will all use a speed setting called autonimous_speed, instead of default_s
 **Parameters:**
 - `speed`: 0-255 (applies to both tracks for forward/backward/pivot)
 - `left_speed` / `right_speed`: -255 to 255 (curve command)
+- `right_clicks` / `left_clicks`: odometer pulse targets per track for predefined curve directives (calculated by Django from rover geometry; optional)
 - `left` / `right`: -255 to 255 (direct track control)
 - `duration`: float seconds (0.5, 1, 2.5, etc.) - optional
 
 **Responses:**
 - Success: `"OK"`
 - Errors: `"ERROR: Emergency stop active"` / `"ERROR: Collision detected..."`
+
+**Unsolicited serial events** (broadcast without a request — `rpi_rover_services` reads these in a background thread):
+- Startup: `{"cr_usb_device":"arduino_mcu_4wd_tank"}` (after "Tank Rover Ready")
+- Collision: `{"left_collision": 1}` / `{"left_collision": -1}` / `{"right_collision": 1}` / `{"right_collision": -1}` — `+1` = forward hit, `-1` = reverse hit
+- E-stop active: `EMERGENCY STOP ACTIVATED` (plain text)
+- E-stop cleared: `Emergency stop cleared` (plain text)
+- Recovery done: `Recovery complete` (plain text)
 
 ## Key Implementation Details
 

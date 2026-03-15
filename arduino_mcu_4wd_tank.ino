@@ -336,13 +336,23 @@ void checkSafetySwitches() {
 
   if (digitalRead(LEFT_BUMPER) == LOW && !leftCollision) {
     leftCollision = true;
-    Serial.println("LEFT COLLISION DETECTED - Reversing");
+    {
+      StaticJsonDocument<32> ev;
+      ev["left_collision"] = (currentLeftSpeed > 0) ? 1 : (currentLeftSpeed < 0) ? -1 : 0;
+      serializeJson(ev, Serial);
+      Serial.println();
+    }
     performCollisionRecovery();
   }
 
   if (digitalRead(RIGHT_BUMPER) == LOW && !rightCollision) {
     rightCollision = true;
-    Serial.println("RIGHT COLLISION DETECTED - Reversing");
+    {
+      StaticJsonDocument<32> ev;
+      ev["right_collision"] = (currentRightSpeed > 0) ? 1 : (currentRightSpeed < 0) ? -1 : 0;
+      serializeJson(ev, Serial);
+      Serial.println();
+    }
     performCollisionRecovery();
   }
 }
