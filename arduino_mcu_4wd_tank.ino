@@ -338,22 +338,38 @@ void checkSafetySwitches() {
     leftCollision = true;
     {
       StaticJsonDocument<32> ev;
-      ev["left_collision"] = (currentLeftSpeed > 0) ? 1 : (currentLeftSpeed < 0) ? -1 : 0;
+      ev["left_collision"] = (currentLeftSpeed < 0) ? -1 : 1;
       serializeJson(ev, Serial);
       Serial.println();
     }
     performCollisionRecovery();
+  } else if (digitalRead(LEFT_BUMPER) == HIGH && leftCollision) {
+    leftCollision = false;
+    {
+      StaticJsonDocument<32> ev;
+      ev["left_collision"] = 0;
+      serializeJson(ev, Serial);
+      Serial.println();
+    }
   }
 
   if (digitalRead(RIGHT_BUMPER) == LOW && !rightCollision) {
     rightCollision = true;
     {
       StaticJsonDocument<32> ev;
-      ev["right_collision"] = (currentRightSpeed > 0) ? 1 : (currentRightSpeed < 0) ? -1 : 0;
+      ev["right_collision"] = (currentRightSpeed < 0) ? -1 : 1;
       serializeJson(ev, Serial);
       Serial.println();
     }
     performCollisionRecovery();
+  } else if (digitalRead(RIGHT_BUMPER) == HIGH && rightCollision) {
+    rightCollision = false;
+    {
+      StaticJsonDocument<32> ev;
+      ev["right_collision"] = 0;
+      serializeJson(ev, Serial);
+      Serial.println();
+    }
   }
 }
 
