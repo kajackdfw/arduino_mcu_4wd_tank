@@ -342,7 +342,7 @@ void checkSafetySwitches() {
       serializeJson(ev, Serial);
       Serial.println();
     }
-    performCollisionRecovery();
+    if (currentLeftSpeed != 0) performCollisionRecovery();
   } else if (digitalRead(LEFT_BUMPER) == HIGH && leftCollision) {
     leftCollision = false;
     {
@@ -361,7 +361,7 @@ void checkSafetySwitches() {
       serializeJson(ev, Serial);
       Serial.println();
     }
-    performCollisionRecovery();
+    if (currentRightSpeed != 0) performCollisionRecovery();
   } else if (digitalRead(RIGHT_BUMPER) == HIGH && rightCollision) {
     rightCollision = false;
     {
