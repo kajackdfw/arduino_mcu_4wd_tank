@@ -339,3 +339,19 @@ digitalWrite(in2Pin, HIGH);  // to reverse direction
 - Motors stop immediately on E-stop (bypasses all safety checks)
 - Collision flags persist until explicitly cleared with reset command
 - Command timeout is NOT implemented (consider adding for production use)
+
+## Right side cable
+==| RIGHT_ENA |------------> PWM Output 9
+==| RIGHT_IN1 |------------> Output 15
+==| RIGHT_IN2 |------------> Output 16
+==| RIGHT_IN3 |------------> Output 18
+==| RIGHT_IN4 |------------> Output 19
+==| RIGHT_ENB |------------> PWM Output 10
+
+## Left side cable
+==| LEFT_ENA |------------> PWM Output 5
+==| LEFT_IN1 |------------> Output 4
+==| LEFT_IN2 |------------> Output 7
+==| LEFT_IN3 |------------> Output 8
+==| LEFT_IN4 |------------> Output 14
+==| LEFT_ENB |------------> PWM Output 6
