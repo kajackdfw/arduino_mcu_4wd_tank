@@ -33,9 +33,9 @@ Reference : https://learn.sparkfun.com/tutorials/pro-micro--fio-v3-hookup-guide/
 | 5   | LEFT_ENA | Left front motor speed (PWM) |
 | 4   | LEFT_IN1 | Left front motor direction   |
 | 7   | LEFT_IN2 | Left front motor direction   |
-| 6   | LEFT_ENB | Left rear motor speed (PWM)  |
 | 8   | LEFT_IN3 | Left rear motor direction    |
 | 14  | LEFT_IN4 | Left rear motor direction    |
+| 6   | LEFT_ENB | Left rear motor speed (PWM)  |
 
 #### Right Track L298N
 | Pin | Function  | Description                   |
@@ -43,16 +43,16 @@ Reference : https://learn.sparkfun.com/tutorials/pro-micro--fio-v3-hookup-guide/
 | 9   | RIGHT_ENA | Right front motor speed (PWM) |
 | 15  | RIGHT_IN1 | Right front motor direction   |
 | 16  | RIGHT_IN2 | Right front motor direction   |
-| 10  | RIGHT_ENB | Right rear motor speed (PWM)  |
 | 18  | RIGHT_IN3 | Right rear motor direction    |
 | 19  | RIGHT_IN4 | Right rear motor direction    |
+| 10  | RIGHT_ENB | Right rear motor speed (PWM)  |
 
 #### Safety Switches
 | Pin | Function     | Type                           |
 |-----|--------------|--------------------------------|
-| 20  | LEFT_BUMPER  | Normally open (INPUT_PULLUP)   |
-| 21  | RIGHT_BUMPER | Normally open (INPUT_PULLUP)   |
-| 0   | ESTOP_SWITCH | Normally closed (INPUT_PULLUP) | <-- marked RX1 
+| 20  | LEFT_BUMPER  | Normally open (INPUT_PULLUP)   | marked A2
+| 21  | RIGHT_BUMPER | Normally open (INPUT_PULLUP)   | marked A3
+| 0   | ESTOP_SWITCH | Normally closed (INPUT_PULLUP) | marked RX
 
 ## Wiring Notes
 - All safety switches connect between their pin and GND
