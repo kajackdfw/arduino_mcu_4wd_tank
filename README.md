@@ -43,8 +43,8 @@ Reference : https://learn.sparkfun.com/tutorials/pro-micro--fio-v3-hookup-guide/
 | 9   | RIGHT_ENA | Right front motor speed (PWM) |
 | 15  | RIGHT_IN1 | Right front motor direction   |
 | 16  | RIGHT_IN2 | Right front motor direction   |
-| 18  | RIGHT_IN3 | Right rear motor direction    |
-| 19  | RIGHT_IN4 | Right rear motor direction    |
+| 18  | RIGHT_IN3 | Right rear motor direction    | MARKED A0
+| 19  | RIGHT_IN4 | Right rear motor direction    | marked A1
 | 10  | RIGHT_ENB | Right rear motor speed (PWM)  |
 
 #### Safety Switches
