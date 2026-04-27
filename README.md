@@ -54,6 +54,10 @@ Reference : https://learn.sparkfun.com/tutorials/pro-micro--fio-v3-hookup-guide/
 | 21  | RIGHT_BUMPER | Normally open (INPUT_PULLUP)   | marked A3
 | 0   | ESTOP_SWITCH | Normally closed (INPUT_PULLUP) | marked RX
 
+#### Odometer
+Pin 2 for left wheel
+Pin 3 for right wheel
+
 ## Wiring Notes
 - All safety switches connect between their pin and GND
 - Internal pullup resistors are enabled on all switch pins
